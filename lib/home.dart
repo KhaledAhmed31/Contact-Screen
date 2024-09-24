@@ -1,4 +1,5 @@
 import 'package:add_contact/contact_card.dart';
+import 'package:add_contact/text_field.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -6,10 +7,10 @@ class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Home> createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
 
@@ -20,14 +21,13 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-  bool card1IsVisiable = false;
-  bool card2IsVisiable = false;
-  bool card3IsVisiable = false;
-  int count = 0;
-  List<ContactCard> cards = [
-    const ContactCard(name: '', phone: 0),
-    const ContactCard(name: '', phone: 0),
-    const ContactCard(name: '', phone: 0),
+  final GlobalKey<FormState> nameKey = GlobalKey();
+  final GlobalKey<FormState> phoneKey = GlobalKey();
+
+  static List<ContactCard> cards = [
+    ContactCard(name: '', phone: 0, onPressed: () {}),
+    ContactCard(name: '', phone: 0, onPressed: () {}),
+    ContactCard(name: '', phone: 0, onPressed: () {})
   ];
   @override
   Widget build(BuildContext context) {
@@ -48,50 +48,17 @@ class _HomeState extends State<Home> {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: TextField(
-                cursorColor: Colors.blue,
-                controller: nameController,
-                decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: const BorderSide(color: Colors.blue)),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: const BorderSide(color: Colors.blue)),
-                    hintText: 'Enter Your Name Here',
-                    suffixIcon: const Icon(
-                      size: 23,
-                      Icons.edit,
-                      color: Colors.blue,
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)))),
-              ),
+              child: Form(
+                  key: nameKey,
+                  child: MyTextField(
+                      hint: "username", controller: nameController)),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: TextField(
-                cursorColor: Colors.blue,
-                controller: phoneController,
-                decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: const BorderSide(color: Colors.blue)),
-                    focusColor: Colors.blue,
-                    hintText: 'Enter Your Number Here',
-                    suffixIcon: const Icon(
-                      size: 23,
-                      Icons.phone,
-                      color: Colors.blue,
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                        borderRadius: BorderRadius.all(Radius.circular(30)))),
-              ),
+              child: Form(
+                  key: phoneKey,
+                  child:
+                      MyTextField(hint: "Phone", controller: phoneController)),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
@@ -105,17 +72,27 @@ class _HomeState extends State<Home> {
                             backgroundColor:
                                 const Color.fromARGB(255, 29, 137, 225)),
                         onPressed: () {
-                          setState(() {
-                            if (count <= 2) {
-                              cards[count] = ContactCard(
-                                name: nameController.text,
-                                phone: int.parse(phoneController.text),
-                              );
+                          if (nameKey.currentState!.validate() &&
+                              phoneKey.currentState!.validate()) {
+                            setState(() {
+                              for (int i = 0; i < 3; ++i) {
+                                if (cards[i].name == '') {
+                                  cards[i] = ContactCard(
+                                    name: nameController.text,
+                                    phone: int.parse(phoneController.text),
+                                    onPressed: () {
+                                      setState(() {
+                                        deleteContact(i);
+                                      });
+                                    },
+                                  );
+                                  break;
+                                }
+                              }
                               nameController.clear();
                               phoneController.clear();
-                              ++count;
-                            }
-                          });
+                            });
+                          }
                         },
                         child: const Text(
                           'Add',
@@ -129,28 +106,36 @@ class _HomeState extends State<Home> {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Visibility(visible: cards[2].name != '', child: cards[2]),
-                    Visibility(visible: cards[1].name != '', child: cards[1]),
-                    Visibility(visible: cards[0].name != '', child: cards[0]),
-                  ],
-                ),
-              ),
-            )
+                child: ListView.builder(
+              itemCount: cards.length,
+              itemBuilder: (context, i) {
+                return cards[i];
+              },
+            ))
           ],
         ),
       ),
     );
   }
 
-  void deleteContact() {
-    setState(() {
-      if (count > 0) {
-        cards[count - 1] = const ContactCard(name: '', phone: 0);
-        --count;
+  void addContact() {
+    for (int i = 0; i < 3; ++i) {
+      if (cards[i].name == '') {
+        cards[i] = ContactCard(
+          name: nameController.text,
+          phone: int.parse(phoneController.text),
+          onPressed: () {
+            setState(() {});
+          },
+        );
       }
-    });
+    }
+  }
+
+  void deleteContact(int index) {
+    cards[index]
+      ..name = ''
+      ..phone = 0
+      ..onPressed = () {};
   }
 }
