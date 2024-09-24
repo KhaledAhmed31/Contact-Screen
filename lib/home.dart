@@ -125,29 +125,6 @@ class _HomeState extends State<Home> {
                               fontWeight: FontWeight.w600),
                         )),
                   ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15)),
-                            backgroundColor:
-                                const Color.fromARGB(255, 255, 71, 77)),
-                        onPressed: () {
-                          setState(() {
-                            if (count > 0) {
-                              cards[count - 1] =
-                                  const ContactCard(name: '', phone: 0);
-                              --count;
-                            }
-                          });
-                        },
-                        child: const Text('Delete',
-                            style: TextStyle(
-                                fontSize: 22,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600))),
-                  ),
                 ],
               ),
             ),
@@ -166,5 +143,14 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  void deleteContact() {
+    setState(() {
+      if (count > 0) {
+        cards[count - 1] = const ContactCard(name: '', phone: 0);
+        --count;
+      }
+    });
   }
 }
