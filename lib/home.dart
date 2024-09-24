@@ -6,12 +6,10 @@ class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => HomeState();
+  State<Home> createState() => _HomeState();
 }
 
-class HomeState extends State<Home> {
-  GlobalKey<FormState> nameKey = GlobalKey();
-  GlobalKey<FormState> phoneKey = GlobalKey();
+class _HomeState extends State<Home> {
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
 
@@ -25,9 +23,12 @@ class HomeState extends State<Home> {
   bool card1IsVisiable = false;
   bool card2IsVisiable = false;
   bool card3IsVisiable = false;
-  static int count = 0;
-  static List<ContactCard> cards = [];
-
+  int count = 0;
+  List<ContactCard> cards = [
+    const ContactCard(name: '', phone: 0),
+    const ContactCard(name: '', phone: 0),
+    const ContactCard(name: '', phone: 0),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,66 +48,49 @@ class HomeState extends State<Home> {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Form(
-                key: nameKey,
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) return 'Name can\'t be empty';
-                    return null;
-                  },
-                  cursorColor: Colors.blue,
-                  controller: nameController,
-                  decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(color: Colors.blue)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(color: Colors.blue)),
-                      hintText: 'Enter Your Name Here',
-                      suffixIcon: const Icon(
-                        size: 23,
-                        Icons.edit,
-                        color: Colors.blue,
-                      ),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)))),
-                ),
+              child: TextField(
+                cursorColor: Colors.blue,
+                controller: nameController,
+                decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(color: Colors.blue)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(color: Colors.blue)),
+                    hintText: 'Enter Your Name Here',
+                    suffixIcon: const Icon(
+                      size: 23,
+                      Icons.edit,
+                      color: Colors.blue,
+                    ),
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)))),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Form(
-                key: phoneKey,
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) return 'phone can\'be empty';
-                    return null;
-                  },
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.blue,
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(color: Colors.blue)),
-                      focusColor: Colors.blue,
-                      hintText: 'Enter Your Number Here',
-                      suffixIcon: const Icon(
-                        size: 23,
-                        Icons.phone,
-                        color: Colors.blue,
-                      ),
-                      fillColor: Colors.white,
-                      filled: true,
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blue),
-                          borderRadius: BorderRadius.all(Radius.circular(30))),
-                      border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)))),
-                ),
+              child: TextField(
+                cursorColor: Colors.blue,
+                controller: phoneController,
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(color: Colors.blue)),
+                    focusColor: Colors.blue,
+                    hintText: 'Enter Your Number Here',
+                    suffixIcon: const Icon(
+                      size: 23,
+                      Icons.phone,
+                      color: Colors.blue,
+                    ),
+                    fillColor: Colors.white,
+                    filled: true,
+                    focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                        borderRadius: BorderRadius.all(Radius.circular(30)))),
               ),
             ),
             Padding(
@@ -121,20 +105,17 @@ class HomeState extends State<Home> {
                             backgroundColor:
                                 const Color.fromARGB(255, 29, 137, 225)),
                         onPressed: () {
-                          if (nameKey.currentState!.validate() &&
-                              phoneKey.currentState!.validate()) {
-                            setState(() {
-                              if (cards.length <= 3) {
-                                cards.add(ContactCard(
-                                  name: nameController.text,
-                                  phone: int.parse(phoneController.text),
-                                ));
-                                nameController.clear();
-                                phoneController.clear();
-                                ++count;
-                              }
-                            });
-                          }
+                          setState(() {
+                            if (count <= 2) {
+                              cards[count] = ContactCard(
+                                name: nameController.text,
+                                phone: int.parse(phoneController.text),
+                              );
+                              nameController.clear();
+                              phoneController.clear();
+                              ++count;
+                            }
+                          });
                         },
                         child: const Text(
                           'Add',
@@ -144,15 +125,41 @@ class HomeState extends State<Home> {
                               fontWeight: FontWeight.w600),
                         )),
                   ),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 71, 77)),
+                        onPressed: () {
+                          setState(() {
+                            if (count > 0) {
+                              cards[count - 1] =
+                                  const ContactCard(name: '', phone: 0);
+                              --count;
+                            }
+                          });
+                        },
+                        child: const Text('Delete',
+                            style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600))),
+                  ),
                 ],
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: cards.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return cards[index];
-                },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Visibility(visible: cards[2].name != '', child: cards[2]),
+                    Visibility(visible: cards[1].name != '', child: cards[1]),
+                    Visibility(visible: cards[0].name != '', child: cards[0]),
+                  ],
+                ),
               ),
             )
           ],
