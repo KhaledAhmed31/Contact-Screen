@@ -21,6 +21,7 @@ class TextFieldState extends State<MyTextField> {
     return TextFormField(
       validator: (value) {
         if (value!.isEmpty) return 'Field is empty';
+        return null;
       },
       cursorColor: Colors.blue,
       controller: controller,

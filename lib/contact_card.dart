@@ -1,24 +1,25 @@
-import 'package:add_contact/home.dart';
 import 'package:flutter/material.dart';
 
-typedef OnPressedFunction = void Function();
-
 // ignore: must_be_immutable
-class ContactCard extends StatelessWidget {
+class ContactCard extends StatefulWidget {
   String name;
   int phone;
-  OnPressedFunction onPressed;
 
-  ContactCard(
-      {super.key,
-      required this.name,
-      required this.phone,
-      required this.onPressed});
+  ContactCard({
+    super.key,
+    required this.name,
+    required this.phone,
+  });
 
+  @override
+  State<ContactCard> createState() => _ContactCardState();
+}
+
+class _ContactCardState extends State<ContactCard> {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: name.isNotEmpty,
+      visible: widget.name.isNotEmpty,
       child: Container(
         alignment: Alignment.centerLeft,
         margin: const EdgeInsets.symmetric(vertical: 15),
@@ -29,8 +30,8 @@ class ContactCard extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                '''Name: $name
-Phone: $phone''',
+                '''Name: ${widget.name}
+Phone: ${widget.phone}''',
                 textAlign: TextAlign.left,
                 style: const TextStyle(
                   fontSize: 25,
@@ -38,7 +39,12 @@ Phone: $phone''',
               ),
             ),
             IconButton(
-                onPressed: onPressed,
+                onPressed: () {
+                  setState(() {
+                    widget.name = '';
+                    widget.phone = 0;
+                  });
+                },
                 icon: const Icon(
                   Icons.delete,
                   color: Colors.red,
@@ -48,17 +54,5 @@ Phone: $phone''',
         ),
       ),
     );
-  }
-
-  void deleteContact(String name) {
-    for (int i = 0; i < 3; ++i) {
-      if (HomeState.cards[i].name == name) {
-        HomeState.cards[i]
-          ..name = ''
-          ..phone = 0
-          ..onPressed = () {};
-        return;
-      }
-    }
   }
 }

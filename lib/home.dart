@@ -25,9 +25,9 @@ class HomeState extends State<Home> {
   final GlobalKey<FormState> phoneKey = GlobalKey();
 
   static List<ContactCard> cards = [
-    ContactCard(name: '', phone: 0, onPressed: () {}),
-    ContactCard(name: '', phone: 0, onPressed: () {}),
-    ContactCard(name: '', phone: 0, onPressed: () {})
+    ContactCard(name: '', phone: 0),
+    ContactCard(name: '', phone: 0),
+    ContactCard(name: '', phone: 0)
   ];
   @override
   Widget build(BuildContext context) {
@@ -75,23 +75,10 @@ class HomeState extends State<Home> {
                           if (nameKey.currentState!.validate() &&
                               phoneKey.currentState!.validate()) {
                             setState(() {
-                              for (int i = 0; i < 3; ++i) {
-                                if (cards[i].name == '') {
-                                  cards[i] = ContactCard(
-                                    name: nameController.text,
-                                    phone: int.parse(phoneController.text),
-                                    onPressed: () {
-                                      setState(() {
-                                        deleteContact(i);
-                                      });
-                                    },
-                                  );
-                                  break;
-                                }
-                              }
-                              nameController.clear();
-                              phoneController.clear();
+                              addContact();
                             });
+                            nameController.clear();
+                            phoneController.clear();
                           }
                         },
                         child: const Text(
@@ -124,18 +111,9 @@ class HomeState extends State<Home> {
         cards[i] = ContactCard(
           name: nameController.text,
           phone: int.parse(phoneController.text),
-          onPressed: () {
-            setState(() {});
-          },
         );
+        break;
       }
     }
-  }
-
-  void deleteContact(int index) {
-    cards[index]
-      ..name = ''
-      ..phone = 0
-      ..onPressed = () {};
   }
 }
